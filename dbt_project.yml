@@ -19,15 +19,7 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-models:
-  my_project:
-    +schema: "{{ target.schema }}"
-    intg:
-      +schema: intg
-    chnl:
-      +schema: chnl
-    pres:
-      +schema: pres
+
 
 target-path: "target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
@@ -45,3 +37,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
     # Applies to all files under models/example/
+models:
+  my_project:
+    +schema: "{{ target.schema }}"
+    intg:
+      +schema: intg
+    chnl:
+      +schema: chnl
+    pres:
+      +schema: pres
