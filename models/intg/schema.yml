@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: PUBLIC
+    database: RAW
+    tables:
+      - name: DEMO_RAW_DATA

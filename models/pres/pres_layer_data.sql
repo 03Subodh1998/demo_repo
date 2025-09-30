@@ -1,0 +1,2 @@
+select *
+from {{ ref('chnl_layer_data') }}
