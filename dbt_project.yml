@@ -15,14 +15,11 @@ snapshot-paths: ["snapshots"]
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 
-## Models Configuration
+## Models Configuration - FIXED
 models:
+  +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
+  
   cority:
-    # Environment-specific materialization
-    +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
-    
-    # Each layer gets its own schema in the database
-    # This will create: cority_wip.pres.table_name, cority_wip.chnl.table_name, etc.
     staging:
       +schema: staging
       +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
@@ -31,24 +28,23 @@ models:
     intg:
       +schema: intg
       +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
-      +tags: ["intg"]
+      +tags: ["integration"]  # Fixed tag name
     
     chnl:
       +schema: chnl
       +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
-      +tags: ["chnl"]
+      +tags: ["channel"]  # Fixed tag name
     
     pres:
       +schema: pres
       +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
-      +tags: ["pres"]
+      +tags: ["presentation"]  # Fixed tag name
 
-## Seeds Configuration
+## Seeds Configuration - FIXED
 seeds:
-  cority:
-    +enabled: true
-    +quote_columns: true
-    +schema: seeds
+  +enabled: true
+  +quote_columns: true
+  +schema: seeds
 
 ## Tests Configuration
 tests:
@@ -62,4 +58,3 @@ vars:
   is_wip: "{{ target.name == 'wip' }}"
 
 require-dbt-version: [">=1.0.0", "<2.0.0"]
-
