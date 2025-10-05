@@ -7,23 +7,23 @@ cority:
       user: 'SUBODH'
       password: 'CorrectATG@123'
       role: 'ACCOUNTADMIN'
-      database: CORITY_WIP  # Database name
+      database: CORITY_WIP  
       warehouse: COMPUTE_WH
-      schema: WIP   # Default schema (not used by your models)
+      schema: WIP   
       threads: 4
       client_session_keep_alive: false
       query_tag: 'dbt_cority_wip'
       
-    # prod:
-    #   type: snowflake
-    #   account: 'SJBDBSY-BU63012'
-    #   user: 'SUBODH'
-    #   password: 'CorrectATG@123'
-    #   role: 'ACCOUNTADMIN'
-    #   database: CORITY_PROD  # Database name
-    #   warehouse: COMPUTE_WH
-    #   schema: prod  # Default schema (not used by your models)
-    #   threads: 8
-    #   client_session_keep_alive: false
-    #   query_tag: 'dbt_cority_prod'
+    prod:
+      type: snowflake
+      account: 'SJBDBSY-BU63012'
+      user: 'SUBODH'
+      password: 'CorrectATG@123'
+      role: 'ACCOUNTADMIN'
+      database: CORITY_PROD  # Database name
+      warehouse: COMPUTE_WH
+      schema: prod  # Default schema (not used by your models)
+      threads: 8
+      client_session_keep_alive: false
+      query_tag: 'dbt_cority_prod'
 
