@@ -1,0 +1,1 @@
+select * from {{ref('chnl_department_data')}}
