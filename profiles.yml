@@ -9,7 +9,7 @@ cority:
       role: 'ACCOUNTADMIN'
       database: CORITY_WIP  # Database name
       warehouse: COMPUTE_WH
-      schema: WIP_CHNL   # Default schema (not used by your models)
+      schema: WIP   # Default schema (not used by your models)
       threads: 4
       client_session_keep_alive: false
       query_tag: 'dbt_cority_wip'
