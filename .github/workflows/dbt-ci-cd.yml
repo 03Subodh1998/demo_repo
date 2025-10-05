@@ -52,7 +52,7 @@
 #         dbt source freshness --target prod
 
 
-name: dbt CI/CD (Single Target)
+name: dbt Advanced CI/CD
 
 on:
   push:
@@ -61,12 +61,17 @@ on:
     branches: [ "main" ]
 
 env:
-  DBT_SNOWFLAKE_ACCOUNT: ${{ secrets.DBT_SNOWFLAKE_ACCOUNT }}
-  DBT_SNOWFLAKE_USER: ${{ secrets.DBT_SNOWFLAKE_USER }}
   DBT_SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
-  DBT_SNOWFLAKE_ROLE: ${{ secrets.DBT_SNOWFLAKE_ROLE }}
-  DBT_SNOWFLAKE_WAREHOUSE: ${{ secrets.DBT_SNOWFLAKE_WAREHOUSE }}
-  DBT_SNOWFLAKE_DATABASE: ${{ secrets.DBT_SNOWFLAKE_DATABASE }}
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+  SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+  # Database names
+  SNOWFLAKE_DATABASE_WIP: ${{ secrets.SNOWFLAKE_DATABASE_WIP }}
+  SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
+  # Threads
+  SNOWFLAKE_THREADS_WIP: 4
+  SNOWFLAKE_THREADS_PROD: 8
 
 jobs:
   branch-deployment:
@@ -93,33 +98,22 @@ jobs:
       id: branch-name
       uses: tj-actions/branch-names@v7
 
-    # ---------------------------------------------
-    # FEATURE / NON-MAIN BRANCH DEPLOYMENT
-    # ---------------------------------------------
-    - name: Deploy to WIP (Feature Branch)
+    - name: Deploy to WIP (Feature Branches)
       if: steps.branch-name.outputs.current_branch != 'main'
-      env:
-        DBT_SCHEMA: "wip"
       run: |
         echo "Deploying to WIP environment for branch: ${{ steps.branch-name.outputs.current_branch }}"
-        echo "Using schema: $DBT_SCHEMA"
-        dbt debug --target wip
         dbt run --target wip
         dbt test --target wip
         dbt docs generate --target wip
 
-    # ---------------------------------------------
-    # MAIN BRANCH DEPLOYMENT → PROD SCHEMA
-    # ---------------------------------------------
-    - name: Deploy to PROD (via WIP target)
+    - name: Deploy to PROD (Main Branch)
       if: steps.branch-name.outputs.current_branch == 'main'
       env:
-        DBT_SCHEMA: "prod"
+        SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA_PROD || 'prod' }}
       run: |
-        echo "Branch merged to main — deploying models to PROD schema using same target"
-        echo "Using schema: $DBT_SCHEMA"
-        dbt debug --target wip
-        dbt run --target wip
-        dbt test --target wip
-        dbt docs generate --target wip
-        dbt source freshness --target wip
+        echo "Deploying to PROD environment"
+        echo "Using PROD schema: $SNOWFLAKE_SCHEMA"
+        dbt run --target prod
+        dbt test --target prod
+        dbt docs generate --target prod
+        dbt source freshness --target prod
