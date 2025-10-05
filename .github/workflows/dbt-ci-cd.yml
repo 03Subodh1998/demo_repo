@@ -1,52 +1,109 @@
-name: dbt Advanced CI/CD
+# name: dbt Advanced CI/CD
+
+# on:
+#   push:
+#     branches: [ "**" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# env:
+#   DBT_SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
+
+# jobs:
+#   branch-deployment:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python-version: [3.9]
+    
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 0  # Important for dbt state comparison
+
+#     - name: Setup Python
+#       uses: actions/setup-python@v4
+#       with:
+#         python-version: ${{ matrix.python-version }}
+
+#     - name: Install dbt
+#       run: pip install dbt-snowflake
+
+#     - name: Get branch name
+#       id: branch-name
+#       uses: tj-actions/branch-names@v7
+
+#     - name: Deploy to WIP (Feature Branches)
+#       if: steps.branch-name.outputs.current_branch != 'main'
+#       run: |
+#         echo "Deploying to WIP environment for branch: ${{ steps.branch-name.outputs.current_branch }}"
+#         dbt run --target wip
+#         dbt test --target wip
+#         dbt docs generate --target wip
+
+#     - name: Deploy to PROD (Main Branch)
+#       if: steps.branch-name.outputs.current_branch == 'main'
+#       run: |
+#         echo "Deploying to PROD environment"
+#         dbt run --target prod
+#         dbt test --target prod
+#         dbt docs generate --target prod
+#         dbt source freshness --target prod
+
+
+name: Cority dbt CI/CD Pipeline
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "main" ]
-
-env:
-  DBT_SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
+    branches: ["main"]
 
 jobs:
-  branch-deployment:
+  dbt-deployment:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Important for dbt state comparison
 
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.9'
 
     - name: Install dbt
       run: pip install dbt-snowflake
 
-    - name: Get branch name
-      id: branch-name
-      uses: tj-actions/branch-names@v7
+    # - name: Run dbt on Feature Branches (WIP)
+    #   if: github.ref != 'refs/heads/main'
+    #   env:
+    #     DBT_TARGET: wip
+    #     SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+    #     SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+    #     SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
+    #     SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+    #     SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+    #     # SNOWFLAKE_DATABASE_WIP: ${{ secrets.SNOWFLAKE_DATABASE_WIP }}
+    #     SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
+    #   run: |
+    #     echo "Running dbt in WIP environment"
+    #     dbt run
+    #     dbt test
 
-    - name: Deploy to WIP (Feature Branches)
-      if: steps.branch-name.outputs.current_branch != 'main'
+    - name: Run dbt on Main Branch (PROD)
+      if: github.ref == 'refs/heads/main'
+      env:
+        DBT_TARGET: prod
+        SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+        SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+        SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
+        SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+        SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+        #SNOWFLAKE_DATABASE_WIP: ${{ secrets.SNOWFLAKE_DATABASE_WIP }}
+        SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
       run: |
-        echo "Deploying to WIP environment for branch: ${{ steps.branch-name.outputs.current_branch }}"
-        dbt run --target wip
-        dbt test --target wip
-        dbt docs generate --target wip
-
-    - name: Deploy to PROD (Main Branch)
-      if: steps.branch-name.outputs.current_branch == 'main'
-      run: |
-        echo "Deploying to PROD environment"
-        dbt run --target prod
-        dbt test --target prod
-        dbt docs generate --target prod
-        dbt source freshness --target prod
+        echo "Running dbt in PROD environment"
+        dbt run
+        dbt test
