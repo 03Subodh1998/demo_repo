@@ -1,0 +1,1 @@
+select * FROM {{ref('cicd_check')}}
