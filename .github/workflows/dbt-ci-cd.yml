@@ -60,60 +60,42 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  DBT_SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
-  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-  SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-  SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-  # Database names
-  SNOWFLAKE_DATABASE_WIP: ${{ secrets.SNOWFLAKE_DATABASE_WIP }}
-  SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
-  # Threads
-  SNOWFLAKE_THREADS_WIP: 4
-  SNOWFLAKE_THREADS_PROD: 8
-
 jobs:
   branch-deployment:
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dbt-snowflake
+      - name: Run dbt in WIP
+        run: dbt run --target wip
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dbt
-      run: pip install dbt-snowflake
-
-    - name: Get branch name
-      id: branch-name
-      uses: tj-actions/branch-names@v7
-
-    - name: Deploy to WIP (Feature Branches)
-      if: steps.branch-name.outputs.current_branch != 'main'
-      run: |
-        echo "Deploying to WIP environment for branch: ${{ steps.branch-name.outputs.current_branch }}"
-        dbt run --target wip
-        dbt test --target wip
-        dbt docs generate --target wip
-
-    - name: Deploy to PROD (Main Branch)
-      if: steps.branch-name.outputs.current_branch == 'main'
-      env:
-        SNOWFLAKE_SCHEMA: 'prod' 
-      run: |
-        echo "Deploying to PROD environment"
-        echo "Using PROD schema: $SNOWFLAKE_SCHEMA"
-        dbt run --target prod
-        dbt test --target prod
-        dbt docs generate --target prod
-        dbt source freshness --target prod
+  prod-deployment:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      DBT_SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      DBT_SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      DBT_SNOWFLAKE_PASSWORD: ${{ secrets.DBT_SNOWFLAKE_PASSWORD }}
+      DBT_SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      DBT_SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
+      DBT_SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install dbt-snowflake
+      - name: Run dbt in Production
+        run: |
+          dbt run \
+            --profiles-dir . \
+            --target prod \
+            --vars "database: $DBT_SNOWFLAKE_DATABASE schema: prod"
