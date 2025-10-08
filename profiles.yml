@@ -24,7 +24,7 @@ cority:
       # role: 'dbt_project_PRDO'
       database: CORITY_PROD  
       warehouse: COMPUTE_WH
-      schema: ROD  
+      schema: PROD  
       threads: 4
       client_session_keep_alive: false
       query_tag: 'dbt_cority_wip'

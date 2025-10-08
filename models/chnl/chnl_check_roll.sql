@@ -1,0 +1,1 @@
+select * from {{ref('intg_raw_employees')}}
