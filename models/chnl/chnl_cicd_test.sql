@@ -1,1 +1,1 @@
-select * FROM {{ref('cicd_check')}}
+select * from {{ref('intg_raw_employees')}}
