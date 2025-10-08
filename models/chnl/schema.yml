@@ -6,7 +6,7 @@ models:
     description: "Integration layer for sales data, cleans and standardizes raw.sales"
     columns:
       - name: employee_id 
-        description: "Unique identifier for each employee."
+        description: "Unique identifier for each employee"
         tests:
           - unique    
           - not_null  
