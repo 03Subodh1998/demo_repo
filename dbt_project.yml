@@ -17,27 +17,20 @@ clean-targets: ["target", "dbt_packages"]
 
 ## Models Configuration - FIXED
 models:
-  +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
+  +materialized: 'view'
   
   cority:
-    staging:
-      +schema: staging
-      +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
-      +tags: ["staging"]
     
     intg:
       +schema: intg
-      +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
       +tags: ["integration"]  # Fixed tag name
     
     chnl:
       +schema: chnl
-      +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
       +tags: ["channel"]  # Fixed tag name
     
     pres:
       +schema: pres
-      +materialized: "{{ 'view' if target.name == 'wip' else 'table' }}"
       +tags: ["presentation"]  # Fixed tag name
 
 ## Seeds Configuration - FIXED
@@ -48,8 +41,8 @@ seeds:
 
 ## Tests Configuration
 tests:
-  +severity: warn
-  +store_failures: "{{ true if target.name == 'wip' else false }}"
+  +severity: error
+  +store_failures: true
 
 ## Variables
 vars:

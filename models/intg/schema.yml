@@ -15,8 +15,17 @@ sources:
            - not_null  
       - name: DEPARTMENTS
         columns:
-        - name: department_id 
+        - name: DEPARTMENT_ID
           description: "Unique identifier for each employee."
           tests:
            - unique    
            - not_null  
+models:
+  - name: intg_raw_department
+    description: 'department data'
+    columns:
+    - name: DEPARTMENT_ID
+      tests:
+      - unique    
+      - not_null  
+    

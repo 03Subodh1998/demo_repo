@@ -6,11 +6,23 @@ cority:
       account: 'SJBDBSY-BU63012'
       user: 'SUBODH'
       password: 'CorrectATG@123'
-      role: 'ACCOUNTADMIN'
+      role: 'DBT_PROJECT_ROLL'
       database: CORITY_WIP  
       warehouse: COMPUTE_WH
       schema: WIP   
       threads: 4
       client_session_keep_alive: false
       query_tag: 'dbt_cority_wip'
-
+      
+    prod:
+      type: snowflake
+      account: 'SJBDBSY-BU63012'
+      user: 'SUBODH'
+      password: 'CorrectATG@123'
+      role: 'dbt_project_PRDO'
+      database: CORITY_PROD  
+      warehouse: COMPUTE_WH
+      schema: ROD  
+      threads: 4
+      client_session_keep_alive: false
+      query_tag: 'dbt_cority_wip'
