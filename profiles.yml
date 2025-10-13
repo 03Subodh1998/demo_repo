@@ -3,28 +3,26 @@ cority:
   outputs:
     wip:
       type: snowflake
-      account: 'SJBDBSY-BU63012'
-      user: 'SUBODH'
-      password: 'CorrectATG@123'
-      role: 'ACCOUNTADMIN'
-      # role: 'DBT_PROJECT_ROLL'
-      database: CORITY_WIP  
-      warehouse: COMPUTE_WH
-      schema: WIP   
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE_WIP') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA_WIP') }}"
       threads: 4
       client_session_keep_alive: false
-      query_tag: 'dbt_cority_wip'
-      
+      query_tag: "dbt_cority_wip"
+
     prod:
       type: snowflake
-      account: 'SJBDBSY-BU63012'
-      user: 'SUBODH'
-      password: 'CorrectATG@123'
-      role: 'ACCOUNTADMIN'
-      # role: 'dbt_project_PRDO'
-      database: CORITY_PROD  
-      warehouse: COMPUTE_WH
-      schema: PROD  
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE_PROD') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA_PROD') }}"
       threads: 4
       client_session_keep_alive: false
-      query_tag: 'dbt_cority_wip'
+      query_tag: "dbt_cority_prod"
