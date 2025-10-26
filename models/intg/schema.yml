@@ -28,4 +28,12 @@ models:
       tests:
       - unique    
       - not_null  
+      
+  - name: intg_subodh
+    description: 'department data'
+    columns:
+    - name: DEPARTMENT_ID
+      tests:
+      - unique    
+      - not_null  
     
